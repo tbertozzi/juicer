@@ -899,6 +899,8 @@ then
         export long_walltime=$long_walltime
         export nofrag=$nofrag
         export load_samtools=$load_samtools
+        export threads=$threads
+        export alloc_mem=$alloc_mem
         export sthreadstring=$sthreadstring
         ${juiceDir}/scripts/launch_stats.sh
 SUPERWRAP1
