@@ -78,30 +78,30 @@ echo "$0 $@"
 ## use cluster load commands:
 #usePath=""
 load_bwa="module load bwa/0.7.17"
-load_java='module load java/jdk1.8.0_131'
-load_samtools="module load samtools"
+load_java='module load java/jdk-13.33'
+load_samtools="module load samtools/1.12"
 #load_cluster=""
 #load_coreutils=""
-load_cuda='module load cuda/7.5.18/gcc/4.4.7'
+load_cuda='module load cuda/11.2.2'
 
 # Juicer directory, contains scripts/, references/, and restriction_sites/
 # can also be set in options via -D
 juiceDir=""
 # default queue, can also be set in options via -q
-queue="batch"
+queue="normal"
 # default queue time, can also be set in options via -Q
 walltime="walltime=24:00:00"
 # default long queue, can also be set in options via -l
-long_queue="batch"
+long_queue="normal"
 # default long queue time, can also be set in options via -L
-long_walltime="walltime=120:00:00"
+long_walltime="walltime=48:00:00"
 # size to split fastqs. adjust to match your needs. 4000000=1M reads per split
 # can also be changed via the -C flag
 splitsize=90000000
 # give your email address to be used in #PBS -M to receive notifications when job error occurs.
 # Must be either set with an email address or skipped
 # This email is not included in the launch stat and postprocessing steps, add manually if needed
-EMAIL='#PBS -M xxx@gmail.com'
+EMAIL='#PBS -M terry.bertozzi@adelaide.edu.au' ####for testing need to fill from command line variable
 # fastq files should look like filename_R1.fastq and filename_R2.fastq
 # if your fastq files look different, change this value
 read1str="_R1"
@@ -111,11 +111,11 @@ read2str="_R2"
 #threads=8
 threads=1
 # default memory allocation
-alloc_mem=$(($threads * 8000))
+alloc_mem=$(($threads * 4000))
 # default max memory allocation
-if [ $alloc_mem -gt 80000 ]
+if [ $alloc_mem -gt 192000 ]
 then
-    alloc_mem=80000
+    alloc_mem=192000
 fi
 
 # unique groupname for jobs submitted in each run. lab initial with an timestamp
@@ -131,9 +131,9 @@ groupname="C$(date "+%s"|cut -c 6-11)"
 # top level directory, can also be set in options
 topDir=$(pwd)
 # restriction enzyme, can also be set in options
-site="none"
+site="Arima"
 # genome ID, default to human, can also be set in options
-genomeID="hg19"
+genomeID=""
 # normally both read ends are aligned with long read aligner;
 # if one end is short, this is set
 shortreadend=0
@@ -304,7 +304,7 @@ then
     echo  "Using $site_file as site file"
 fi
 
-## Set threads for sending appropriate parameters to cluster and string for BWA/Samtools call 
+## Set threads for sending appropriate parameters to cluster and string for BWA/Samtools call
 threadstring="-t $threads"
 sthreadstring="-@ $threads"
 
@@ -436,8 +436,8 @@ then
                 #PBS -S /bin/bash
                 #PBS -q $queue
                 #PBS -l $walltime
-                #PBS -l nodes=1:ppn=1
-                #PBS -l mem=2gb
+                #PBS -l ncpus=1
+                #PBS -l mem=4gb
                 ${EMAIL}
                 #PBS -m a
                 #PBS -o ${logdir}/${timestamp}_split_${filename}_${groupname}.log
@@ -462,8 +462,8 @@ SPLITEND
             #PBS -S /bin/bash
             #PBS -q $queue
             #PBS -l $walltime
-            #PBS -l nodes=1:ppn=1
-            #PBS -l mem=2gb
+            #PBS -l ncpus=1
+            #PBS -l mem=4gb
             ${EMAIL}
             #PBS -m a
             #PBS -o ${logdir}/${timestamp}_move_${groupname}.log
@@ -502,8 +502,8 @@ SPLITMV
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
-    #PBS -l nodes=1:ppn=1
-    #PBS -l mem=6gb
+    #PBS -l ncpus=2
+    #PBS -l mem=8gb
     #PBS -o ${logdir}/${timestamp}_alnwrap_${groupname}.log
     #PBS -j oe
     #PBS -N AlnWrp${groupname}
@@ -532,7 +532,7 @@ SPLITMV
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
-        #PBS -l nodes=1:ppn=1
+        #PBS -l ncpus=1
         #PBS -l mem=4gb
         ${EMAIL}
         #PBS -m a
@@ -566,7 +566,7 @@ CNTLIG
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
-        #PBS -l nodes=1:ppn=${threads}
+        #PBS -l ncpus=${threads}
         #PBS -l mem=\${alloc_mem}
         ${EMAIL}
         #PBS -m a
@@ -590,7 +590,7 @@ CNTLIG
            echo "Mem align of \${name}\${ext}.sam done successfully"
         fi
         echo "below is the number of lines in .sam file"
-        wc -l \${name}\${ext}.sam 
+        wc -l \${name}\${ext}.sam
 ALGNR1
         wait
         # Get the jobID from qstat ouput by searching job specific string,"read1\${countjobs}" , in job Name.
@@ -604,7 +604,7 @@ ALGNR1
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $long_walltime
-        #PBS -l nodes=1:ppn=1
+        #PBS -l ncpus=6
         #PBS -l mem=24gb
         ${EMAIL}
         #PBS -m a
@@ -626,8 +626,8 @@ ALGNR1
         then
            awk -v stem=${name}${ext}_norm -v site_file=$site_file -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
         else
-           awk -v stem=${name}${ext}_norm -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam > $name$ext.sam2 
-           awk -v avgInsertFile=${name}${ext}_norm.txt.res.txt -f $juiceDir/scripts/adjust_insert_size.awk $name$ext.sam2 | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam 
+           awk -v stem=${name}${ext}_norm -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam > $name$ext.sam2
+           awk -v avgInsertFile=${name}${ext}_norm.txt.res.txt -f $juiceDir/scripts/adjust_insert_size.awk $name$ext.sam2 | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
         fi
         if [ \$? -ne 0 ]
         then
@@ -655,9 +655,9 @@ MRGALL
     timestamp=\$(date +"%s" | cut -c 4-10)
     qsub <<- CKALIGNFAIL
     #PBS -S /bin/bash
-    #PBS -q $queue  
-    #PBS -l nodes=1:ppn=1
-    #PBS -l mem=2gb
+    #PBS -q $queue
+    #PBS -l ncpus=1
+    #PBS -l mem=4gb
     #PBS -l $walltime
     ${EMAIL}
     #PBS -m a
@@ -673,8 +673,8 @@ CKALIGNFAIL
     timestamp=\$(date +"%s" | cut -c 4-10)
     qsub <<- CKALIGNFAILCLN
     #PBS -S /bin/bash
-    #PBS -q $queue  
-    #PBS -l nodes=1:ppn=1
+    #PBS -q $queue
+    #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -l $walltime
     ${EMAIL}
@@ -711,8 +711,8 @@ then
     timestamp=$(date +"%s" | cut -c 4-10)
     qsub <<MRGSRTWRAP
     #PBS -S /bin/bash
-    #PBS -q $queue  
-    #PBS -l nodes=1:ppn=1
+    #PBS -q $queue
+    #PBS -l ncpus=6
     #PBS -l mem=24gb
     #PBS -l $walltime
     ${EMAIL}
@@ -722,7 +722,7 @@ then
     #PBS -N MStWrp${groupname}
     ${waitstring_mrgsrtwrp}
     date +"%Y-%m-%d %H:%M:%S"
-    echo "all alignment done, all aplitting and alignment jobs succeeded!" 
+    echo "all alignment done, all aplitting and alignment jobs succeeded!"
     jID_alnOK=\$( qstat | grep AlnOK_${groupname} | cut -d ' ' -f 1 )
     echo "jID_aln-OK job id is \$jID_alnOK "
     timestamp=\$(date +"%s" | cut -c 4-10)
@@ -737,8 +737,8 @@ then
     echo \${waitstring_alnOK}
     qsub <<MRGSRT
         #PBS -S /bin/bash
-        #PBS -q $queue  
-        #PBS -l nodes=1:ppn=1
+        #PBS -q $queue
+        #PBS -l ncpus=6
         #PBS -l mem=24gb
         #PBS -l $walltime
         ${EMAIL}
@@ -768,9 +768,9 @@ MRGSRT
         timestamp=\$(date +"%s" | cut -c 4-10)
         qsub <<MRGSRTFAILCK
         #PBS -S /bin/bash
-        #PBS -q $queue  
-        #PBS -l nodes=1:ppn=1
-        #PBS -l mem=2gb
+        #PBS -q $queue
+        #PBS -l ncpus=1
+        #PBS -l mem=4gb
         #PBS -l $walltime
         ${EMAIL}
         #PBS -m a
@@ -801,8 +801,8 @@ then
     timestamp=$(date +"%s" | cut -c 4-10)
     qsub <<RMDUPWRAP
     #PBS -S /bin/bash
-    #PBS -q $queue  
-    #PBS -l nodes=1:ppn=1
+    #PBS -q $queue
+    #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -l $walltime
     ${EMAIL}
@@ -823,8 +823,8 @@ then
     timestamp=\$(date +"%s" | cut -c 4-10)
     qsub <<RMDUPLICATE
         #PBS -S /bin/bash
-        #PBS -q $queue  
-        #PBS -l nodes=1:ppn=1
+        #PBS -q $queue
+        #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -l $walltime
         ${EMAIL}
@@ -837,7 +837,7 @@ then
         date +"%Y-%m-%d %H:%M:%S"
         echo "Sucess: All mergefragments jobs were successfully finished!"
         echo "now starts to remove duplicates from the big sorted file"
-        samtools view -h $outputdir/merged_sort.bam | awk -v queue=${long_queue} -v outfile=${logdir}/\${timestamp}_awksplit_rmdups -v juicedir=${juiceDir} -v dir=$outputdir -v groupname=$groupname -v walltime=$long_walltime -v justexact=$justexact -f ${juiceDir}/scripts/split_rmdups_sam.awk 
+        samtools view -h $outputdir/merged_sort.bam | awk -v queue=${long_queue} -v outfile=${logdir}/\${timestamp}_awksplit_rmdups -v juicedir=${juiceDir} -v dir=$outputdir -v groupname=$groupname -v walltime=$long_walltime -v justexact=$justexact -f ${juiceDir}/scripts/split_rmdups_sam.awk
 RMDUPLICATE
 
 RMDUPWRAP
@@ -871,8 +871,8 @@ then
 	qsub <<SUPERWRAP1
         #PBS -S /bin/bash
         #PBS -q $queue
-        #PBS -l nodes=1:ppn=1
-        #PBS -l mem=1gb
+        #PBS -l ncpus=1
+        #PBS -l mem=4gb
         #PBS -l $walltime
         ${EMAIL}
         #PBS -m a
@@ -917,7 +917,7 @@ SUPERWRAP1
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
-    #PBS -l nodes=1:ppn=1
+    #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_super_wrap2_${groupname}.log
     #PBS -j oe
@@ -954,8 +954,8 @@ else
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
-    #PBS -l nodes=1:ppn=1 
-    #PBS -l mem=1gb
+    #PBS -l ncpus=1
+    #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.out
     #PBS -j oe
     ${EMAIL}
@@ -965,15 +965,15 @@ else
     date +"%Y-%m-%d %H:%M:%S"
 
     jID_osplit=\$( qstat | grep osplit${groupname} | cut -d ' ' -f 1 )
-    jID_rmsplit=\$( qstat | grep RmSplt${groupname} | cut -d ' ' -f 1)        
+    jID_rmsplit=\$( qstat | grep RmSplt${groupname} | cut -d ' ' -f 1)
     wait
     timestamp=\$(date +"%s" | cut -c 4-10)
     qsub <<PREPDONE
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
-        #PBS -l nodes=1:ppn=1 
-        #PBS -l mem=1gb
+        #PBS -l ncpus=1
+        #PBS -l mem=4gb
         #PBS -o ${logdir}/\${timestamp}_done_${groupname}.log
         #PBS -j oe
         #PBS -N ${groupname}_done
@@ -990,4 +990,3 @@ FINCK2
 
 fi
 echo "Finished adding all jobs... please wait while processing."
-
