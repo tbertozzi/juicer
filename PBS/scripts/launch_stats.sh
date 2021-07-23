@@ -16,6 +16,8 @@ echo "queue $queue"
 echo "resolutions: $resolutions"
 echo "walltime: $walltime"
 echo "long_walltime: $long_walltime"
+echo "threads: $threads"
+echo "alloc_mem: $alloc_mem"
 echo $load_java
 jID_osplit=$( qstat | grep osplit${groupname} | cut -d ' ' -f 1 )
 
@@ -30,9 +32,9 @@ echo $waitstring2
 timestamp=$(date +"%s" | cut -c 4-10)
 qsub <<DOSTAT
 #PBS -S /bin/bash
-#PBS -q batch
-#PBS -l nodes=1:ppn=1:AMD
-#PBS -l mem=1gb
+#PBS -q $queue
+#PBS -l ncpus=1
+#PBS -l mem=4gb
 #PBS -l $walltime
 #PBS -o ${logdir}/${timestamp}_launch_${groupname}.log
 #PBS -j oe
@@ -57,8 +59,8 @@ echo "start sbumitting stats job"
 qsub <<STATS0
 	#PBS -S /bin/bash
 	#PBS -q $queue
-	#PBS -l nodes=1:ppn=1:AMD
-	#PBS -l mem=20gb
+	#PBS -l ncpus=$threads
+	#PBS -l mem=\${alloc_mem}
 	#PBS -l $walltime
 	\${waitstring22}
 	#PBS -o ${logdir}/\${timestamp}_stats0_${groupname}.log
@@ -67,12 +69,12 @@ qsub <<STATS0
 
 	date +"%Y-%m-%d %H:%M:%S"
 	$load_java
-        $load_samtools
-	export _JAVA_OPTIONS=-Xmx16384m; 
+  $load_samtools
+	export _JAVA_OPTIONS=-Xmx16384m;
 	export LC_ALL=en_US.UTF-8
 
-        samtools view $sthreadstring -F 1024 -O sam ${outputdir}/merged_dedup.sam | awk -v mapq=1 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged0.txt  
-	tail -n1 $headfile | awk '{printf"%-1000s\n", \\\$0}' > $outputdir/inter.txt 
+        samtools view $sthreadstring -F 1024 -O sam ${outputdir}/merged_dedup.sam | awk -v mapq=1 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged0.txt
+	tail -n1 $headfile | awk '{printf"%-1000s\n", \\\$0}' > $outputdir/inter.txt
 	cat $splitdir/*.res.txt | awk -f ${juiceDir}/scripts/stats_sub.awk >> $outputdir/inter.txt
 	${juiceDir}/scripts/juicer_tools LibraryComplexity $outputdir inter.txt >> $outputdir/inter.txt
 	${juiceDir}/scripts/statistics.pl -s $site_file -l $ligation -o $outputdir/inter.txt $outputdir/merged0.txt
@@ -82,22 +84,22 @@ STATS0
 qsub <<STATS30
 	#PBS -S /bin/bash
 	#PBS -q $queue
-	#PBS -l nodes=1:ppn=1:AMD
-	#PBS -l mem=20gb
+	#PBS -l ncpus=$threads
+	#PBS -l mem=\${alloc_mem}
 	#PBS -l $walltime
 	#PBS -o ${logdir}/\${timestamp}_stats_${groupname}.log
 	#PBS -j oe
 	#PBS -N stats30${groupname}
 	\${waitstring22}
-	
+
 	date +"%Y-%m-%d %H:%M:%S"
 	$load_java
         $load_samtools
-	export _JAVA_OPTIONS=-Xmx16384m; 
+	export _JAVA_OPTIONS=-Xmx16384m;
 	export LC_ALL=en_US.UTF-8
-        samtools view $sthreadstring -F 1024 -O sam ${outputdir}/merged_dedup.sam | awk -v mapq=30 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged30.txt  
-	echo -e 'Experiment description: $about' > $outputdir/inter_30.txt; 
-	tail -n1 $headfile | awk '{printf"%-1000s\n", \\\$0}' > $outputdir/inter_30.txt 
+        samtools view $sthreadstring -F 1024 -O sam ${outputdir}/merged_dedup.sam | awk -v mapq=30 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged30.txt
+	echo -e 'Experiment description: $about' > $outputdir/inter_30.txt;
+	tail -n1 $headfile | awk '{printf"%-1000s\n", \\\$0}' > $outputdir/inter_30.txt
 	cat $splitdir/*.res.txt | awk -f ${juiceDir}/scripts/stats_sub.awk >> $outputdir/inter_30.txt
 	java -cp ${juiceDir}/scripts/ LibraryComplexity $outputdir inter_30.txt >> $outputdir/inter_30.txt
 	${juiceDir}/scripts/statistics.pl -s $site_file -l $ligation -o $outputdir/inter_30.txt $outputdir/merged30.txt
@@ -112,20 +114,20 @@ timestamp=\$(date +"%s" | cut -c 4-10)
 qsub <<- BAMRM
 	#PBS -S /bin/bash
 	#PBS -q $queue
-	#PBS -l nodes=1:ppn=1:AMD
-	#PBS -l mem=60gb
+	#PBS -l ncpus=$threads
+	#PBS -l mem=\${alloc_mem}
 	#PBS -l $long_walltime
 	#PBS -o ${logdir}/\${timestamp}_hic0_${groupname}.log
 	#PBS -j oe
 	#PBS -N bamrm_${groupname}
 	#PBS -W depend=afterok:\${jID_stats0}
-	
+
 	date +"%Y-%m-%d %H:%M:%S"
-        $load_samtools
+  $load_samtools
 	export _JAVA_OPTIONS=-Xmx16384m
 
         if samtools view -b $sthreadstring ${outputdir}/merged_dedup.sam > ${outputdir}/merged_dedup.bam
-        then 
+        then
            rm ${outputdir}/merged_dedup.sam
            rm ${outputdir}/merged_sort.bam
         fi
@@ -136,23 +138,23 @@ echo "start submitting hic job"
 qsub <<- HICWORK
 	#PBS -S /bin/bash
 	#PBS -q $queue
-	#PBS -l nodes=1:ppn=1:AMD
-	#PBS -l mem=60gb
+	#PBS -l ncpus=16
+	#PBS -l mem=64gb
 	#PBS -l $long_walltime
 	#PBS -o ${logdir}/\${timestamp}_hic0_${groupname}.log
 	#PBS -j oe
 	#PBS -N hic0_${groupname}
 	#PBS -W depend=afterok:\${jID_stats0}
-	
+
 	date +"%Y-%m-%d %H:%M:%S"
-	echo "finished stats job,now launching the hic job."    
+	echo "finished stats job,now launching the hic job."
 	${load_java}
 	export _JAVA_OPTIONS=-Xmx16384m
 
 	if [ \"$nofrag\" -eq 1 ]
-	then 
+	then
 		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter.txt -g $outputdir/inter_hists.m -q 1 $outputdir/merged0.txt $outputdir/inter.hic $genomePath
-	else 
+	else
 		${juiceDir}/scripts/juicer_tools pre -f $site_file -s $outputdir/inter.txt -g $outputdir/inter_hists.m -q 1 $outputdir/merged0.txt $outputdir/inter.hic $genomePath
 	fi
 HICWORK
@@ -162,22 +164,22 @@ echo "start submitting hic30 job"
 qsub <<- HIC30WORK
 	#PBS -S /bin/bash
 	#PBS -q $queue
-	#PBS -l nodes=1:ppn=1:AMD
-	#PBS -l mem=60gb
+	#PBS -l ncpus=16
+	#PBS -l mem=64gb
 	#PBS -l $long_walltime
 	#PBS -o ${logdir}/\${timestamp}_hic30_${groupname}.log
 	#PBS -j oe
 	#PBS -N hic30_${groupname}
 	#PBS -W depend=afterok:\${jID_stats30}
-	
+
 	date +"%Y-%m-%d %H:%M:%S"
 	$load_java
 	export _JAVA_OPTIONS=-Xmx16384m
 	export LC_ALL=en_US.UTF-8
 	if [  \"$nofrag\" -eq 1 ]
-	then 
+	then
 	${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter_30.txt -g $outputdir/inter_30_hists.m -q 30 $outputdir/merged30.txt $outputdir/inter_30.hic $genomePath
-	else 
+	else
 		${juiceDir}/scripts/juicer_tools pre -f $site_file -s $outputdir/inter_30.txt -g $outputdir/inter_30_hists.m -q 30 $outputdir/merged30.txt $outputdir/inter_30.hic $genomePath
 	fi
 HIC30WORK
