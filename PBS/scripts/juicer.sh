@@ -409,9 +409,10 @@ fi
 if [[ -z "$final" && -z "$merge" && -z "$dedup" && -z "$postproc" ]]
 then
     if [ "$nofrag" -eq 0 ]
-	echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with site file $site_file"
+    then
+	     echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with site file $site_file"
     else
-	echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with no site file."
+	      echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with no site file."
     fi
 
     ## Split fastq files into smaller portions for parallelizing alignment
