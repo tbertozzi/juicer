@@ -441,6 +441,7 @@ then
                 #PBS -q $queue
                 #PBS -l $walltime
                 #PBS -P $project
+                #PBS -l storage=gdata/xl04
                 #PBS -l ncpus=1
                 #PBS -l mem=4gb
                 ${EMAIL}
@@ -468,6 +469,7 @@ SPLITEND
             #PBS -q $queue
             #PBS -l $walltime
             #PBS -P $project
+            #PBS -l storage=gdata/xl04
             #PBS -l ncpus=1
             #PBS -l mem=4gb
             ${EMAIL}
@@ -509,6 +511,7 @@ SPLITMV
     #PBS -q $queue
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     #PBS -l ncpus=2
     #PBS -l mem=8gb
     #PBS -o ${logdir}/${timestamp}_alnwrap_${groupname}.log
@@ -540,6 +543,7 @@ SPLITMV
         #PBS -q $queue
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         ${EMAIL}
@@ -575,6 +579,7 @@ CNTLIG
         #PBS -q $queue
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         #PBS -l ncpus=${threads}
         #PBS -l mem=\${alloc_mem}
         ${EMAIL}
@@ -614,6 +619,7 @@ ALGNR1
         #PBS -q $queue
         #PBS -l $long_walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         #PBS -l ncpus=6
         #PBS -l mem=24gb
         ${EMAIL}
@@ -670,6 +676,7 @@ MRGALL
     #PBS -l mem=4gb
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/\${timestamp}_check_alnOK_${groupname}.log
@@ -689,6 +696,7 @@ CKALIGNFAIL
     #PBS -l mem=4gb
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/\${timestamp}_alignfailclean_${groupname}.log
@@ -728,6 +736,7 @@ then
     #PBS -l mem=24gb
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/${timestamp}_mergesortwrap_${groupname}.log
@@ -755,6 +764,7 @@ then
         #PBS -l mem=24gb
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_fragmerge_${groupname}.log
@@ -787,6 +797,7 @@ MRGSRT
         #PBS -l mem=4gb
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_clean1_${groupname}.log
@@ -821,6 +832,7 @@ then
     #PBS -l mem=4gb
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/${timestamp}_rmdupwrap_${groupname}.log
@@ -844,6 +856,7 @@ then
         #PBS -l mem=4gb
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_osplit_${groupname}.log
@@ -892,6 +905,7 @@ then
         #PBS -l mem=4gb
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/${timestamp}_superwrap1_${groupname}.log
@@ -938,6 +952,7 @@ SUPERWRAP1
     #PBS -q $queue
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_super_wrap2_${groupname}.log
@@ -976,6 +991,7 @@ else
     #PBS -q $queue
     #PBS -l $walltime
     #PBS -P $project
+    #PBS -l storage=gdata/xl04
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.out
@@ -995,6 +1011,7 @@ else
         #PBS -q $queue
         #PBS -l $walltime
         #PBS -P $project
+        #PBS -l storage=gdata/xl04
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -o ${logdir}/\${timestamp}_done_${groupname}.log
