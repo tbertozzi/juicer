@@ -33,6 +33,7 @@ timestamp=$(date +"%s" | cut -c 4-10)
 qsub <<DOSTAT
 #PBS -S /bin/bash
 #PBS -q $queue
+#PBS -P xl04
 #PBS -l ncpus=1
 #PBS -l mem=4gb
 #PBS -l $walltime
@@ -59,6 +60,7 @@ echo "start sbumitting stats job"
 qsub <<STATS0
 	#PBS -S /bin/bash
 	#PBS -q $queue
+	#PBS -P xl04
 	#PBS -l ncpus=$threads
 	#PBS -l mem=\${alloc_mem}
 	#PBS -l $walltime
@@ -84,6 +86,7 @@ STATS0
 qsub <<STATS30
 	#PBS -S /bin/bash
 	#PBS -q $queue
+	#PBS -P xl04
 	#PBS -l ncpus=$threads
 	#PBS -l mem=\${alloc_mem}
 	#PBS -l $walltime
@@ -114,6 +117,7 @@ timestamp=\$(date +"%s" | cut -c 4-10)
 qsub <<- BAMRM
 	#PBS -S /bin/bash
 	#PBS -q $queue
+	#PBS -P xl04
 	#PBS -l ncpus=$threads
 	#PBS -l mem=\${alloc_mem}
 	#PBS -l $long_walltime
@@ -138,6 +142,7 @@ echo "start submitting hic job"
 qsub <<- HICWORK
 	#PBS -S /bin/bash
 	#PBS -q $queue
+	#PBS -P xl04
 	#PBS -l ncpus=16
 	#PBS -l mem=64gb
 	#PBS -l $long_walltime
@@ -164,6 +169,7 @@ echo "start submitting hic30 job"
 qsub <<- HIC30WORK
 	#PBS -S /bin/bash
 	#PBS -q $queue
+	#PBS -P xl04
 	#PBS -l ncpus=16
 	#PBS -l mem=64gb
 	#PBS -l $long_walltime

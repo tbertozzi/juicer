@@ -84,6 +84,9 @@ load_samtools="module load samtools/1.12"
 #load_coreutils=""
 load_cuda='module load cuda/11.2.2'
 
+#gadi project to charge
+project="xl04"
+
 # Juicer directory, contains scripts/, references/, and restriction_sites/
 # can also be set in options via -D
 juiceDir=""
@@ -437,6 +440,7 @@ then
                 #PBS -S /bin/bash
                 #PBS -q $queue
                 #PBS -l $walltime
+                #PBS -P $project
                 #PBS -l ncpus=1
                 #PBS -l mem=4gb
                 ${EMAIL}
@@ -463,6 +467,7 @@ SPLITEND
             #PBS -S /bin/bash
             #PBS -q $queue
             #PBS -l $walltime
+            #PBS -P $project
             #PBS -l ncpus=1
             #PBS -l mem=4gb
             ${EMAIL}
@@ -503,6 +508,7 @@ SPLITMV
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
+    #PBS -P $project
     #PBS -l ncpus=2
     #PBS -l mem=8gb
     #PBS -o ${logdir}/${timestamp}_alnwrap_${groupname}.log
@@ -533,6 +539,7 @@ SPLITMV
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
+        #PBS -P $project
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         ${EMAIL}
@@ -567,6 +574,7 @@ CNTLIG
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
+        #PBS -P $project
         #PBS -l ncpus=${threads}
         #PBS -l mem=\${alloc_mem}
         ${EMAIL}
@@ -605,6 +613,7 @@ ALGNR1
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $long_walltime
+        #PBS -P $project
         #PBS -l ncpus=6
         #PBS -l mem=24gb
         ${EMAIL}
@@ -660,6 +669,7 @@ MRGALL
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -l $walltime
+    #PBS -P $project
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/\${timestamp}_check_alnOK_${groupname}.log
@@ -678,6 +688,7 @@ CKALIGNFAIL
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -l $walltime
+    #PBS -P $project
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/\${timestamp}_alignfailclean_${groupname}.log
@@ -716,6 +727,7 @@ then
     #PBS -l ncpus=6
     #PBS -l mem=24gb
     #PBS -l $walltime
+    #PBS -P $project
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/${timestamp}_mergesortwrap_${groupname}.log
@@ -742,6 +754,7 @@ then
         #PBS -l ncpus=6
         #PBS -l mem=24gb
         #PBS -l $walltime
+        #PBS -P $project
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_fragmerge_${groupname}.log
@@ -773,6 +786,7 @@ MRGSRT
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -l $walltime
+        #PBS -P $project
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_clean1_${groupname}.log
@@ -806,6 +820,7 @@ then
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -l $walltime
+    #PBS -P $project
     ${EMAIL}
     #PBS -m a
     #PBS -o ${logdir}/${timestamp}_rmdupwrap_${groupname}.log
@@ -828,6 +843,7 @@ then
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -l $walltime
+        #PBS -P $project
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/\${timestamp}_osplit_${groupname}.log
@@ -875,6 +891,7 @@ then
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -l $walltime
+        #PBS -P $project
         ${EMAIL}
         #PBS -m a
         #PBS -o ${logdir}/${timestamp}_superwrap1_${groupname}.log
@@ -920,6 +937,7 @@ SUPERWRAP1
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
+    #PBS -P $project
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_super_wrap2_${groupname}.log
@@ -957,6 +975,7 @@ else
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
+    #PBS -P $project
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.out
@@ -975,6 +994,7 @@ else
         #PBS -S /bin/bash
         #PBS -q $queue
         #PBS -l $walltime
+        #PBS -P $project
         #PBS -l ncpus=1
         #PBS -l mem=4gb
         #PBS -o ${logdir}/\${timestamp}_done_${groupname}.log

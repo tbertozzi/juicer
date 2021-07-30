@@ -10,6 +10,7 @@ timestamp=$(date +"%s" | cut -c 4-10)
 qsub <<- POSTPROCWRAP
 #PBS -S /bin/bash
 #PBS -q $queue
+#PBS -P xl04
 #PBS -l $walltime
 #PBS -l ncpus=1
 #PBS -l mem=4gb
@@ -32,6 +33,7 @@ timestamp=\$(date +"%s" | cut -c 4-10)
 qsub <<POSTPROCESS
     #PBS -S /bin/bash
     #PBS -q $queue
+    #PBS -P xl04
     #PBS -l $long_walltime
     #PBS -l ncpus=16
     #PBS -l mem=64gb
@@ -60,6 +62,7 @@ qsub <<- FINCK
 #PBS -S /bin/bash
 #PBS -q $queue
 #PBS -l $walltime
+#PBS -P xl04
 #PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.log
 #PBS -j oe
 #PBS -N Pdone_${groupname}
@@ -82,6 +85,7 @@ qsub <<DONE
     #PBS -S /bin/bash
     #PBS -q $queue
     #PBS -l $walltime
+    #PBS -P xl04
     #PBS -l ncpus=1
     #PBS -l mem=4gb
     #PBS -o ${logdir}/\${timestamp}_done_${groupname}.log
