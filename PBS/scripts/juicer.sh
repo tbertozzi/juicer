@@ -118,7 +118,7 @@ alloc_mem=$(($threads * 4000))
 # default max memory allocation
 if [ $alloc_mem -gt 192000 ]
 then
-    alloc_mem=192000
+	alloc_mem=192000
 fi
 
 # unique groupname for jobs submitted in each run. lab initial with an timestamp
@@ -169,142 +169,135 @@ earlyexitHelp="* -e: Use for an early exit, before the final creation of the hic
 helpHelp="* -h: print this help and exit"
 
 printHelpAndExit() {
-    echo -e "$usageHelp"
-    echo -e "$genomeHelp"
-    echo -e "$dirHelp"
-    echo -e "$queueHelp"
-    echo -e "$longQueueHelp"
-    echo -e "$siteHelp"
-    echo -e "$aboutHelp"
-    echo -e "$stageHelp"
-    echo -e "$pathHelp"
-    echo -e "$siteFileHelp"
-    echo -e "$refSeqHelp"
-    echo -e "$chunkHelp"
-    echo -e "$scriptDirHelp"
-    echo -e "$queueTimeHelp"
-    echo -e "$longQueueTimeHelp"
-    echo -e "$ligationHelp"
-    echo -e "$threadsHelp"
-    echo -e "$threadsHicHelp"
-    echo -e "$earlyexitHelp"
-    echo "$excludeHelp"
-    echo "$helpHelp"
-    exit "$1"
+	echo -e "$usageHelp"
+	echo -e "$genomeHelp"
+	echo -e "$dirHelp"
+	echo -e "$queueHelp"
+	echo -e "$longQueueHelp"
+	echo -e "$siteHelp"
+	echo -e "$aboutHelp"
+	echo -e "$stageHelp"
+	echo -e "$pathHelp"
+	echo -e "$siteFileHelp"
+	echo -e "$refSeqHelp"
+	echo -e "$chunkHelp"
+	echo -e "$scriptDirHelp"
+	echo -e "$queueTimeHelp"
+	echo -e "$longQueueTimeHelp"
+	echo -e "$ligationHelp"
+	echo -e "$threadsHelp"
+	echo -e "$threadsHicHelp"
+	echo -e "$earlyexitHelp"
+	echo "$excludeHelp"
+	echo "$helpHelp"
+	exit "$1"
 }
 
 while getopts "d:g:a:hq:s:p:l:y:z:S:C:D:Q:L:b:i:t:jfecT:" opt; do
-    case $opt in
-	g) genomeID=$OPTARG ;;
-	h) printHelpAndExit 0;;
-	d) topDir=$OPTARG ;;
-	l) long_queue=$OPTARG ;;
-	q) queue=$OPTARG ;;
-	s) site=$OPTARG ;;
-	a) about=$OPTARG ;;
-	p) genomePath=$OPTARG ;;
-	y) site_file=$OPTARG ;;
-	z) refSeq=$OPTARG ;;
-	S) stage=$OPTARG ;;
-	C) splitsize=$OPTARG; splitme=1 ;;
-	D) juiceDir=$OPTARG ;;
-	Q) walltime=$OPTARG ;;
-	L) long_walltime=$OPTARG ;;
-	f) nofrag=0 ;;
-	b) ligation=$OPTARG ;;
-	t) threads=$OPTARG ;;
-	j) justexact=1 ;;
-	e) earlyexit=1 ;;
-	T) threadsHic=$OPTARG ;;
-	i) sampleName=$OPTARG ;;
-	[?]) printHelpAndExit 1;;
-    esac
+	case $opt in
+		g) genomeID=$OPTARG ;;
+		h) printHelpAndExit 0;;
+		d) topDir=$OPTARG ;;
+		l) long_queue=$OPTARG ;;
+		q) queue=$OPTARG ;;
+		s) site=$OPTARG ;;
+		a) about=$OPTARG ;;
+		p) genomePath=$OPTARG ;;
+		y) site_file=$OPTARG ;;
+		z) refSeq=$OPTARG ;;
+		S) stage=$OPTARG ;;
+		C) splitsize=$OPTARG; splitme=1 ;;
+		D) juiceDir=$OPTARG ;;
+		Q) walltime=$OPTARG ;;
+		L) long_walltime=$OPTARG ;;
+		f) nofrag=0 ;;
+		b) ligation=$OPTARG ;;
+		t) threads=$OPTARG ;;
+		j) justexact=1 ;;
+		e) earlyexit=1 ;;
+		T) threadsHic=$OPTARG ;;
+		i) sampleName=$OPTARG ;;
+		[?]) printHelpAndExit 1;;
+	esac
 done
 
-if [ ! -z "$stage" ]
-then
-    case $stage in
-	chimeric) chimeric=1 ;;
-        merge) merge=1 ;;
-        dedup) dedup=1 ;;
-        early) earlyexit=1 ;;
-        final) final=1 ;;
-        postproc) postproc=1 ;;
-        *)  echo "$usageHelp"
-        echo "$stageHelp"
-        exit 1
-    esac
+if [ ! -z "$stage" ]; then
+	case $stage in
+		chimeric) chimeric=1 ;;
+		merge) merge=1 ;;
+		dedup) dedup=1 ;;
+		early) earlyexit=1 ;;
+		final) final=1 ;;
+		postproc) postproc=1 ;;
+		*)  echo "$usageHelp"
+		echo "$stageHelp"
+		exit 1
+	esac
 fi
 
 ## Set reference sequence based on genome ID
-if [ -z "$refSeq" ]
-then
-    case $genomeID in
-	mm9) refSeq="${juiceDir}/references/Mus_musculus_assembly9_norandom.fasta";;
-	mm10) refSeq="${juiceDir}/references/Mus_musculus_assembly10.fasta";;
-	hg38) refSeq="${juiceDir}/references/hg38.fa";;
-	hg19) refSeq="${juiceDir}/references/Homo_sapiens_assembly19.fasta";;
-	*)  echo "$usageHelp"
-            echo "$genomeHelp"
-            exit 1
-    esac
+if [ -z "$refSeq" ]; then
+	case $genomeID in
+		mm9) refSeq="${juiceDir}/references/Mus_musculus_assembly9_norandom.fasta";;
+		mm10) refSeq="${juiceDir}/references/Mus_musculus_assembly10.fasta";;
+		hg38) refSeq="${juiceDir}/references/hg38.fa";;
+		hg19) refSeq="${juiceDir}/references/Homo_sapiens_assembly19.fasta";;
+		*)  echo "$usageHelp"
+		echo "$genomeHelp"
+		exit 1
+	esac
 else
-    # Reference sequence passed in, so genomePath must be set for the .hic file
-    # to be properly created
-    if [[ -z "$genomePath" ]] && [[ -z $earlyexit ]]
-        then
-        echo "***! You must define a chrom.sizes file via the \"-p\" flag that delineates the lengths of the chromosomes in the genome at $refSeq";
-        exit 1;
-    fi
+	# Reference sequence passed in, so genomePath must be set for the .hic file
+	# to be properly created
+	if [[ -z "$genomePath" ]] && [[ -z $earlyexit ]]; then
+		echo "***! You must define a chrom.sizes file via the \"-p\" flag that delineates the lengths of the chromosomes in the genome at $refSeq";
+		exit 1;
+	fi
 fi
 
 ## Check that refSeq exists
 if [ ! -e "$refSeq" ]; then
-    echo "***! Reference sequence $refSeq does not exist";
-    exit 1;
+	echo "***! Reference sequence $refSeq does not exist";
+	exit 1;
 fi
 
 ## Check that index for refSeq exists
 if [ ! -e "${refSeq}.bwt" ]; then
-    echo "***! Reference sequence $refSeq does not appear to have been indexed. Please run bwa index on this file before running juicer.";
-    exit 1;
+	echo "***! Reference sequence $refSeq does not appear to have been indexed. Please run bwa index on this file before running juicer.";
+	exit 1;
 fi
 
 ## Set ligation junction based on restriction enzyme
 if [ -z "$ligation" ]; then
-    case $site in
-	HindIII) ligation="AAGCTAGCTT";;
-	DpnII) ligation="GATCGATC";;
-	MboI) ligation="GATCGATC";;
-	NcoI) ligation="CCATGCATGG";;
-	Arima) ligation="'(GAATAATC|GAATACTC|GAATAGTC|GAATATTC|GAATGATC|GACTAATC|GACTACTC|GACTAGTC|GACTATTC|GACTGATC|GAGTAATC|GAGTACTC|GAGTAGTC|GAGTATTC|GAGTGATC|GATCAATC|GATCACTC|GATCAGTC|GATCATTC|GATCGATC|GATTAATC|GATTACTC|GATTAGTC|GATTATTC|GATTGATC)'" ;;
-	none) ligation="XXXX";;
-	*)  ligation="XXXX"
-	    echo "$site not listed as recognized enzyme. Using $site_file as site file"
-	    echo "Ligation junction is undefined"
-	    exit 1
-    esac
+	case $site in
+		HindIII) ligation="AAGCTAGCTT";;
+		DpnII) ligation="GATCGATC";;
+		MboI) ligation="GATCGATC";;
+		NcoI) ligation="CCATGCATGG";;
+		Arima) ligation="'(GAATAATC|GAATACTC|GAATAGTC|GAATATTC|GAATGATC|GACTAATC|GACTACTC|GACTAGTC|GACTATTC|GACTGATC|GAGTAATC|GAGTACTC|GAGTAGTC|GAGTATTC|GAGTGATC|GATCAATC|GATCACTC|GATCAGTC|GATCATTC|GATCGATC|GATTAATC|GATTACTC|GATTAGTC|GATTATTC|GATTGATC)'" ;;
+		none) ligation="XXXX";;
+		*)  ligation="XXXX"
+		echo "$site not listed as recognized enzyme. Using $site_file as site file"
+		echo "Ligation junction is undefined"
+		exit 1
+	esac
 fi
 
 ## If DNAse-type experiment, no fragment maps
-if [ "$site" == "none" ]
-then
-    nofrag=1;
+if [ "$site" == "none" ]; then
+	nofrag=1;
 fi
 
-if [ -z "$site_file" ]
-then
-    site_file="${juiceDir}/restriction_sites/${genomeID}_${site}.txt"
+if [ -z "$site_file" ]; then
+	site_file="${juiceDir}/restriction_sites/${genomeID}_${site}.txt"
 fi
 
 ## Check that site file exists, needed for fragment number for merged_nodups
-if [[ ! -e "$site_file" ]] && [[ "$site" != "none" ]] &&  [[ ! "$site_file" =~ "none" ]]
-then
-    echo "***! $site_file does not exist. It must be created before running this script."
-    exit 1
-elif [[ "$site" != "none" ]] && [[ ! "$site_file" =~ "none" ]]
-then
-    echo  "Using $site_file as site file"
+if [[ ! -e "$site_file" ]] && [[ "$site" != "none" ]] &&  [[ ! "$site_file" =~ "none" ]]; then
+	echo "***! $site_file does not exist. It must be created before running this script."
+	exit 1
+elif [[ "$site" != "none" ]] && [[ ! "$site_file" =~ "none" ]]; then
+	echo  "Using $site_file as site file"
 fi
 
 ## Set threads for sending appropriate parameters to cluster and string for BWA/Samtools call
@@ -319,66 +312,63 @@ outputdir=${topDir}"/aligned"
 tmpdir=${topDir}"/HIC_tmp"
 logdir=${topDir}"/logs"
 
-if [ -z "$threadsHic" ]
-then
-    threadsHic=1
-    threadHicString=""
-    threadHic30String=""
-    threadNormString=""
+if [ -z "$threadsHic" ]; then
+	threadsHic=1
+	threadHicString=""
+	threadHic30String=""
+	threadNormString=""
 else
-    threadHicString="--threads $threadsHic -i ${outputdir}/merged0_index.txt -t ${outputdir}/HIC_tmp"
-    threadHic30String="--threads $threadsHic -i ${outputdir}/merged30_index.txt -t ${outputdir}/HIC30_tmp"
-    threadNormString="--threads $threadsHic"
+	threadHicString="--threads $threadsHic -i ${outputdir}/merged0_index.txt -t ${outputdir}/HIC_tmp"
+	threadHic30String="--threads $threadsHic -i ${outputdir}/merged30_index.txt -t ${outputdir}/HIC30_tmp"
+	threadNormString="--threads $threadsHic"
 fi
 
 ## Check that fastq directory exists and has proper fastq files
 if [ ! -d "${topDir}/fastq" ]; then
-    echo "Directory \"${topDir}/fastq\" does not exist."
-    echo "Create \"$topDir/fastq\" and put fastq files to be aligned there."
-    echo "Type \"juicer.sh -h\" for help"
-    exit 1
+	echo "Directory \"${topDir}/fastq\" does not exist."
+	echo "Create \"$topDir/fastq\" and put fastq files to be aligned there."
+	echo "Type \"juicer.sh -h\" for help"
+	exit 1
 else
-    if stat -t ${fastqdir} >/dev/null 2>&1
-    then
-    echo "(-: Looking for fastq files...fastq files exist"
-    else
-    if [ ! -d "$splitdir" ]; then
-        echo "***! Failed to find any files matching ${fastqdir}"
-        echo "***! Type \"juicer.sh -h \" for help"
-        exit 1
-    fi
-    fi
+	if stat -t ${fastqdir} >/dev/null 2>&1; then
+		echo "(-: Looking for fastq files...fastq files exist"
+	else
+		if [ ! -d "$splitdir" ]; then
+			echo "***! Failed to find any files matching ${fastqdir}"
+			echo "***! Type \"juicer.sh -h \" for help"
+			exit 1
+		fi
+	fi
 fi
 
 ## Create output directory, only if not in dedup, final, or postproc stages
-if [[ -d "$outputdir" && -z "$final" && -z "$dedup" && -z "$postproc" ]]
-then
-    echo "***! Move or remove directory \"$outputdir\" before proceeding."
-    echo "***! Type \"juicer.sh -h \" for help"
-    exit 1
+if [[ -d "$outputdir" && -z "$final" && -z "$dedup" && -z "$postproc" ]]; then
+	echo "***! Move or remove directory \"$outputdir\" before proceeding."
+	echo "***! Type \"juicer.sh -h \" for help"
+	exit 1
 else
-    if [[ -z "$final" && -z "$dedup" && -z "$postproc" ]]; then
-        mkdir "$outputdir" || { echo "***! Unable to create ${outputdir}, check permissions." ; exit 1; }
-    fi
+	if [[ -z "$final" && -z "$dedup" && -z "$postproc" ]]; then
+		mkdir "$outputdir" || { echo "***! Unable to create ${outputdir}, check permissions." ; exit 1; }
+	fi
 fi
 
 ## Create split directory
 if [ -d "$splitdir" ]; then
-    splitdirexists=1
+	splitdirexists=1
 else
-    mkdir "$splitdir" || { echo "***! Unable to create ${splitdir}, check permissions." ; exit 1; }
+	mkdir "$splitdir" || { echo "***! Unable to create ${splitdir}, check permissions." ; exit 1; }
 fi
 
 ## Create temporary directory, used for sort later
 if [ ! -d "$tmpdir" ] && [ -z "$final" ] && [ -z "$dedup" ] && [ -z "$postproc" ]; then
-    mkdir "$tmpdir"
-    chmod 777 "$tmpdir"
+	mkdir "$tmpdir"
+	chmod 777 "$tmpdir"
 fi
 
 ## Create a log directory, used to store log files (standout and standerr of each submitted jobs)
 if [ ! -d "$logdir" ] && [ -z "$final" ] && [ -z "$dedup" ] && [ -z "$postproc" ]; then
-    mkdir "$logdir"
-    chmod 777 "$tmpdir"
+	mkdir "$logdir"
+	chmod 777 "$tmpdir"
 fi
 
 ## Arguments have been checked and directories created. Now begins the real work of the pipeline
@@ -389,485 +379,450 @@ fi
 countjobs=0
 jobIDstring=""
 
-if [ -z $splitme ]
-then
-    fastqsize=$(ls -lgGL  ${fastqdir} | awk '{sum+=$3}END{print sum}')
-    if [ "$fastqsize" -gt "2592410750" ]
-    then
-        splitme=1
-    fi
+if [ -z $splitme ]; then
+	fastqsize=$(ls -lgGL  ${fastqdir} | awk '{sum+=$3}END{print sum}')
+	if [ "$fastqsize" -gt "2592410750" ]; then
+		splitme=1
+	fi
 fi
 
 testname=$(ls -lgG ${fastqdir} | awk 'NR==1;{print $7}')
-if [ "${testname: -3}" == ".gz" ]
-then
-    skipsplit=1
-    read1=${splitdir}"/*${read1str}*.fastq.gz"
-    gzipped=1
+if [ "${testname: -3}" == ".gz" ]; then
+	skipsplit=1
+	read1=${splitdir}"/*${read1str}*.fastq.gz"
+	gzipped=1
 else
-    read1=${splitdir}"/*${read1str}*.fastq"
+	read1=${splitdir}"/*${read1str}*.fastq"
 fi
 
 ## Not in merge, dedup, final, or postproc stage, i.e. need to split and align files.
-if [[ -z "$final" && -z "$merge" && -z "$dedup" && -z "$postproc" ]]
-then
-    if [ "$nofrag" -eq 0 ]
-    then
-	     echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with site file $site_file"
-    else
-	      echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with no site file."
-    fi
+if [[ -z "$final" && -z "$merge" && -z "$dedup" && -z "$postproc" ]]; then
+	if [ "$nofrag" -eq 0 ]; then
+		echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with site file $site_file"
+	else
+		echo -e "(-: Aligning files matching $fastqdir\n in queue $queue to genome $genomeID with no site file."
+	fi
 
-    ## Split fastq files into smaller portions for parallelizing alignment
-    ## Do this by creating a text script file for the job on STDIN and then
-    ## sending it to the cluster
-    if [ ! $splitdirexists ]
-    then
-        echo "(-: Created $splitdir and $outputdir."
-        if [ -n "$splitme" ] && [ -z "$skipsplit" ]
-        then
-            echo " Splitting files"
-            jIDs_spit=""
-            for i in ${fastqdir}
-            do
-                filename=$(basename "$i")
-                filename=${filename%.*}
-
-                #wait till the previous qsub job has finished sucessfully
-                #submitted job might get delayed due to time in the queue.
-                timestamp=$(date +"%s" | cut -c 4-10)
-                jID_split=$(qsub <<SPLITEND
-                #PBS -S /bin/bash
-                #PBS -q $queue
-                #PBS -l $walltime
-                #PBS -P $project
-                #PBS -l storage=gdata/xl04
-                #PBS -l ncpus=1
-                #PBS -l mem=4gb
-                ${EMAIL}
-                #PBS -m a
-                #PBS -o ${logdir}/${timestamp}_split_${filename}_${groupname}.log
-                #PBS -j oe
-                #PBS -N split_${filename}_${groupname}
-
-                date +"%Y-%m-%d %H:%M:%S"
-                echo "Split file: $filename"
-                #Following line is used in coreutils >= 8.16, if not, simpler version is used below.
-                #split -a 3 -l $splitsize -d --additional-suffix=.fastq ${i} $splitdir/$filename
-                split -a 3 -l $splitsize -d ${i} ${splitdir}/${filename}
+	## Split fastq files into smaller portions for parallelizing alignment
+	## Do this by creating a text script file for the job on STDIN and then
+	## sending it to the cluster
+	if [ ! $splitdirexists ]; then
+		echo "(-: Created $splitdir and $outputdir."
+		if [ -n "$splitme" ] && [ -z "$skipsplit" ]; then
+			echo " Splitting files"
+			jIDs_spit=""
+			for i in ${fastqdir}; do
+				filename=$(basename "$i")
+				filename=${filename%.*}
+				#wait till the previous qsub job has finished sucessfully
+				#submitted job might get delayed due to time in the queue.
+				timestamp=$(date +"%s" | cut -c 4-10)
+				jID_split=$(qsub <<- SPLITEND
+				#PBS -S /bin/bash
+				#PBS -q $queue
+				#PBS -l $walltime
+				#PBS -P $project
+				#PBS -l storage=gdata/xl04
+				#PBS -l ncpus=1
+				#PBS -l mem=4gb
+				${EMAIL}
+				#PBS -m a
+				#PBS -o ${logdir}/${timestamp}_split_${filename}_${groupname}.log
+				#PBS -j oe
+				#PBS -N split_${filename}_${groupname}
+				date +"%Y-%m-%d %H:%M:%S"
+				echo "Split file: $filename"
+				#Following line is used in coreutils >= 8.16, if not, simpler version is used below.
+				#split -a 3 -l $splitsize -d --additional-suffix=.fastq ${i} $splitdir/$filename
+				split -a 3 -l $splitsize -d ${i} ${splitdir}/${filename}
 SPLITEND
 )
-                jIDs_split="${jIDs_split}:${jID_split}"
-           done
-
-            ## wait till the fastq spliting job has sucessfully finished
-            ## Once split succeeds, rename the splits as fastq files
-            ## PBS users change queue below to $queue
-            timestamp=$(date +"%s" | cut -c 4-10)
-            jID_splitmv=$(qsub << SPLITMV
-            #PBS -S /bin/bash
-            #PBS -q $queue
-            #PBS -l $walltime
-            #PBS -P $project
-            #PBS -l storage=gdata/xl04
-            #PBS -l ncpus=1
-            #PBS -l mem=4gb
-            ${EMAIL}
-            #PBS -m a
-            #PBS -o ${logdir}/${timestamp}_move_${groupname}.log
-            #PBS -j oe
-            #PBS -N move_${groupname}
-            #PBS -W depend=afterok${jIDs_split}
-            date +"%Y-%m-%d %H:%M:%S"
-            for j in ${splitdir}/*;do mv \${j} \${j}.fastq;done
+				jIDs_split="${jIDs_split}:${jID_split}"
+			done
+			## wait till the fastq spliting job has sucessfully finished
+			## Once split succeeds, rename the splits as fastq files
+			## PBS users change queue below to $queue
+			timestamp=$(date +"%s" | cut -c 4-10)
+			jID_splitmv=$(qsub <<- SPLITMV
+			#PBS -S /bin/bash
+			#PBS -q $queue
+			#PBS -l $walltime
+			#PBS -P $project
+			#PBS -l storage=gdata/xl04
+			#PBS -l ncpus=1
+			#PBS -l mem=4gb
+			${EMAIL}
+			#PBS -m a
+			#PBS -o ${logdir}/${timestamp}_move_${groupname}.log
+			#PBS -j oe
+			#PBS -N move_${groupname}
+			#PBS -W depend=afterok${jIDs_split}
+			date +"%Y-%m-%d %H:%M:%S"
+			for j in ${splitdir}/*;do mv \${j} \${j}.fastq;done
 SPLITMV
 )
 
-        else # we're not splitting but just copying
-            cp -rs ${fastqdir} ${splitdir}
-            wait
-        fi
-    else # split dir already exists, no need to re-split fastqs
-        echo -e "---  Using already created files in $splitdir\n"
-    fi
+		else # we're not splitting but just copying
+			cp -rs ${fastqdir} ${splitdir}
+			wait
+		fi
+	else # split dir already exists, no need to re-split fastqs
+		echo -e "---  Using already created files in $splitdir\n"
+	fi
 
-    ## Launch job. Once split/move is done, set the parameters for the launch.
+	## Launch job. Once split/move is done, set the parameters for the launch.
+	echo "(-: Starting job to launch other jobs once splitting is complete"
 
-    echo "(-: Starting job to launch other jobs once splitting is complete"
-
-    # Loop over all read1 fastq files and create jobs for aligning read1,
-    # aligning read2, and merging the two. Keep track of merge names for final
-    # merge. When merge jobs successfully finish, can launch final merge job.
-
-    if [ -n "$splitme" ] && [ -z "$skipsplit" ]
-    then
-        waitstring_alnwrp="#PBS -W depend=afterok:${jID_splitmv}"
-    fi
-    echo "waitstring_alnwrp is ${waitstring_alnwrp}"
-
-    timestamp=$(date +"%s" | cut -c 4-10)
-    qsub <<ALIGNWRAP
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    #PBS -l ncpus=2
-    #PBS -l mem=8gb
-    #PBS -o ${logdir}/${timestamp}_alnwrap_${groupname}.log
-    #PBS -j oe
-    #PBS -N AlnWrp${groupname}
-    $waitstring_alnwrp
-    ${EMAIL}
-    #PBS -m a
-    for i in ${read1}
-    do
-
-        countjobs=\$(( countjobs + 1 ))
-        ext=\${i#*$read1str}
-        name=\${i%$read1str*}
-        # these names have to be right or it'll break
-        name1=\${name}${read1str}
-        name2=\${name}${read2str}
-        jname=\$(basename "\$name")\${ext}
-        usegzip=0
-        if [ "\${ext: -3}" == ".gz" ]
-        then
-            usegzip=1
-        fi
-
-        ## count ligations
-        timestamp=\$(date +"%s" | cut -c 4-10)
-        qsub <<-CNTLIG
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        #PBS -l ncpus=1
-        #PBS -l mem=4gb
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_\${jname}_CntLig_\${countjobs}_${groupname}.log
-        #PBS -j oe
-        #PBS -N CtLig\${countjobs}${groupname}
-        #PBS -v name=\${name}
-        #PBS -v name1=\${name1}
-        #PBS -v name2=\${name2}
-        #PBS -v ext=\${ext}
-        #PBS -v ligation=${ligation}
-        #PBS -v usezip=\${usezip}
-
-        date +"%Y-%m-%d %H:%M:%S"
-        export usegzip=\${usegzip}
-        export name=\${name}
-        export name1=\${name1}
-        export name2=\${name2}
-        export ext=\${ext}
-        export ligation=${ligation}
-        ${juiceDir}/scripts/countligations.sh
+	# Loop over all read1 fastq files and create jobs for aligning read1,
+	# aligning read2, and merging the two. Keep track of merge names for final
+	# merge. When merge jobs successfully finish, can launch final merge job.
+	if [ -n "$splitme" ] && [ -z "$skipsplit" ]; then
+		waitstring_alnwrp="#PBS -W depend=afterok:${jID_splitmv}"
+	fi
+	echo "waitstring_alnwrp is ${waitstring_alnwrp}"
+	timestamp=$(date +"%s" | cut -c 4-10)
+	qsub <<- ALIGNWRAP
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		#PBS -l ncpus=2
+		#PBS -l mem=8gb
+		#PBS -o ${logdir}/${timestamp}_alnwrap_${groupname}.log
+		#PBS -j oe
+		#PBS -N AlnWrp${groupname}
+		$waitstring_alnwrp
+		${EMAIL}
+		#PBS -m a
+		for i in ${read1}; do
+			countjobs=\$(( countjobs + 1 ))
+			ext=\${i#*$read1str}
+			name=\${i%$read1str*}
+			# these names have to be right or it'll break
+			name1=\${name}${read1str}
+			name2=\${name}${read2str}
+			jname=\$(basename "\$name")\${ext}
+			usegzip=0
+			if [ "\${ext: -3}" == ".gz" ]; then
+				usegzip=1
+			fi
+			## count ligations
+			timestamp=\$(date +"%s" | cut -c 4-10)
+			qsub <<-CNTLIG
+				#PBS -S /bin/bash
+				#PBS -q $queue
+				#PBS -l $walltime
+				#PBS -P $project
+				#PBS -l storage=gdata/xl04
+				#PBS -l ncpus=1
+				#PBS -l mem=4gb
+				${EMAIL}
+				#PBS -m a
+				#PBS -o ${logdir}/\${timestamp}_\${jname}_CntLig_\${countjobs}_${groupname}.log
+				#PBS -j oe
+				#PBS -N CtLig\${countjobs}${groupname}
+				#PBS -v name=\${name}
+				#PBS -v name1=\${name1}
+				#PBS -v name2=\${name2}
+				#PBS -v ext=\${ext}
+				#PBS -v ligation=${ligation}
+				#PBS -v usezip=\${usezip}
+				date +"%Y-%m-%d %H:%M:%S"
+				export usegzip=\${usegzip}
+				export name=\${name}
+				export name1=\${name1}
+				export name2=\${name2}
+				export ext=\${ext}
+				export ligation=${ligation}
+				${juiceDir}/scripts/countligations.sh
 CNTLIG
-        jID_cntlig=\$(qstat | grep "CtLig\${countjobs}${groupname}" | cut -d ' ' -f 1 )
-        echo "jID_cntlig \${countjobs} id is \${jID_cntlig}"
-        ## Align read1
-        # align read1 fastq
-        echo "starting alignment"
 
-        timestamp=\$(date +"%s" | cut -c 4-10)
-        qsub <<ALGNR1
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        #PBS -l ncpus=${threads}
-        #PBS -l mem=\${alloc_mem}
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_\${jname}_align1_\${countjobs}_${groupname}.log
-        #PBS -j oe
-        #PBS -N ALN1\${countjobs}${groupname}
-        #PBS -W depend=afterok:\$jID_cntlig
-        #PBS -v name=\${name}
-        #PBS -v name1=\${name1}
-        #PBS -v ext=\${ext}
-
-        date +"%Y-%m-%d %H:%M:%S"
-        $load_bwa
-        echo 'Running command bwa mem -SP5M $threadstring $refSeq \${name1}\${ext} \${name2}\${ext}   > \${name}\${ext}.sam '
-        bwa mem -SP5M $threadstring $refSeq \${name1}\${ext} \${name2}\${ext} > \${name}\${ext}.sam
-        if [ \$? -ne 0 ]
-        then
-            echo "***!Error, failed to align \${name1}\${ext}"
-            exit 1
-        else
-           echo "Mem align of \${name}\${ext}.sam done successfully"
-        fi
-        echo "below is the number of lines in .sam file"
-        wc -l \${name}\${ext}.sam
+			jID_cntlig=\$(qstat | grep "CtLig\${countjobs}${groupname}" | cut -d ' ' -f 1 )
+			echo "jID_cntlig \${countjobs} id is \${jID_cntlig}"
+			## Align read1
+			# align read1 fastq
+			echo "starting alignment"
+			timestamp=\$(date +"%s" | cut -c 4-10)
+			qsub <<- ALGNR1
+				#PBS -S /bin/bash
+				#PBS -q $queue
+				#PBS -l $walltime
+				#PBS -P $project
+				#PBS -l storage=gdata/xl04
+				#PBS -l ncpus=$threads
+				#PBS -l mem=\${alloc_mem}
+				${EMAIL}
+				#PBS -m a
+				#PBS -o ${logdir}/\${timestamp}_\${jname}_align1_\${countjobs}_${groupname}.log
+				#PBS -j oe
+				#PBS -N ALN1\${countjobs}${groupname}
+				#PBS -W depend=afterok:\$jID_cntlig
+				#PBS -v name=\${name}
+				#PBS -v name1=\${name1}
+				#PBS -v ext=\${ext}
+				date +"%Y-%m-%d %H:%M:%S"
+				$load_bwa
+				echo 'Running command bwa mem -SP5M $threadstring $refSeq \${name1}\${ext} \${name2}\${ext}   > \${name}\${ext}.sam '
+				bwa mem -SP5M $threadstring $refSeq \${name1}\${ext} \${name2}\${ext} > \${name}\${ext}.sam
+				if [ \$? -ne 0 ]; then
+					echo "***!Error, failed to align \${name1}\${ext}"
+					exit 1
+				else
+					echo "Mem align of \${name}\${ext}.sam done successfully"
+				fi
+				echo "below is the number of lines in .sam file"
+				wc -l \${name}\${ext}.sam
 ALGNR1
-        wait
-        # Get the jobID from qstat ouput by searching job specific string,"read1\${countjobs}" , in job Name.
-        jID_1=\$( qstat | grep "ALN1\${countjobs}${groupname}" |cut -d ' ' -f 1 )
-        echo "align \$countjobs id is: \${jID_1}"
 
-        echo "starting chimeric read handling"
-        # wait for align job to finish
-        timestamp=\$(date +"%s" | cut -c 4-10)
-        qsub <<- MRGALL
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l $long_walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        #PBS -l ncpus=6
-        #PBS -l mem=24gb
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_\${jname}_merge_\${countjobs}_${groupname}.log
-        #PBS -j oe
-        #PBS -N Mrg\${countjobs}${groupname}
-        #PBS -W depend=afterok:\${jID_1}
-        #PBS -v name=\${name}
-        #PBS -v name1=\${name1}
-        #PBS -v name2=\${name2}
-        #PBS -v ext=\${ext}
-        #PBS -v countjobs=\${countjobs}
-
-        date +"%Y-%m-%d %H:%M:%S"
-        $load_samtools
-        export LC_ALL=C
-        # call chimeric_blacklist.awk to deal with chimeric reads; sorted file is sorted by read name at this point
-        if [ "$site" != "none" ] && [ -e "$site_file" ]
-        then
-           awk -v stem=${name}${ext}_norm -v site_file=$site_file -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
-        else
-           awk -v stem=${name}${ext}_norm -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam > $name$ext.sam2
-           awk -v avgInsertFile=${name}${ext}_norm.txt.res.txt -f $juiceDir/scripts/adjust_insert_size.awk $name$ext.sam2 | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
-        fi
-        if [ \$? -ne 0 ]
-        then
-           echo "***! Failure during chimera handling of \${name}\${ext}"
-           echo "Chimera handling of \${name}\${ext}.sam failed."
-           exit 1
-        fi
+			wait
+			# Get the jobID from qstat ouput by searching job specific string,"read1\${countjobs}" , in job Name.
+			jID_1=\$( qstat | grep "ALN1\${countjobs}${groupname}" |cut -d ' ' -f 1 )
+			echo "align \$countjobs id is: \${jID_1}"
+			echo "starting chimeric read handling"
+			# wait for align job to finish
+			timestamp=\$(date +"%s" | cut -c 4-10)
+			qsub <<- MRGALL
+				#PBS -S /bin/bash
+				#PBS -q $queue
+				#PBS -l $long_walltime
+				#PBS -P $project
+				#PBS -l storage=gdata/xl04
+				#PBS -l ncpus=6
+				#PBS -l mem=24gb
+				${EMAIL}
+				#PBS -m a
+				#PBS -o ${logdir}/\${timestamp}_\${jname}_merge_\${countjobs}_${groupname}.log
+				#PBS -j oe
+				#PBS -N Mrg\${countjobs}${groupname}
+				#PBS -W depend=afterok:\${jID_1}
+				#PBS -v name=\${name}
+				#PBS -v name1=\${name1}
+				#PBS -v name2=\${name2}
+				#PBS -v ext=\${ext}
+				#PBS -v countjobs=\${countjobs}
+				date +"%Y-%m-%d %H:%M:%S"
+				$load_samtools
+				export LC_ALL=C
+				# call chimeric_blacklist.awk to deal with chimeric reads; sorted file is sorted by read name at this point
+				if [ "$site" != "none" ] && [ -e "$site_file" ]; then
+			 		awk -v stem=${name}${ext}_norm -v site_file=$site_file -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
+				else
+			 		awk -v stem=${name}${ext}_norm -f $juiceDir/scripts/chimeric_sam.awk $name$ext.sam > $name$ext.sam2
+			 		awk -v avgInsertFile=${name}${ext}_norm.txt.res.txt -f $juiceDir/scripts/adjust_insert_size.awk $name$ext.sam2 | samtools sort -t cb -n $sthreadstring >  ${name}${ext}.bam
+				fi
+				if [ \$? -ne 0 ]; then
+					echo "***! Failure during chimera handling of \${name}\${ext}"
+					echo "Chimera handling of \${name}\${ext}.sam failed."
+					exit 1
+				fi
 MRGALL
 
-    wait
+			wait
 
-    jID_4=\$(qstat | grep "Mrg\${countjobs}${groupname}" | cut -d ' ' -f 1)
-    echo "chimeric \$countjobs id is \$jID_4"
-    exitstatus=\$(qstat -f \${jID_4} |grep "exit_status" )
-    echo "the exit status of \{jID_4} is \${exitstatus}"
-    jobIDstring="\${jobIDstring}:\${jID_4}"
-    echo "jobIDstring \$countjobs is \${jobIDstring}"
+			jID_4=\$(qstat | grep "Mrg\${countjobs}${groupname}" | cut -d ' ' -f 1)
+			echo "chimeric \$countjobs id is \$jID_4"
+			exitstatus=\$(qstat -f \${jID_4} |grep "exit_status" )
+			echo "the exit status of \{jID_4} is \${exitstatus}"
+			jobIDstring="\${jobIDstring}:\${jID_4}"
+			echo "jobIDstring \$countjobs is \${jobIDstring}"
 
-    # done looping over all fastq split files
-    done
+			# done looping over all fastq split files
+		done
 
-
-    # if error occored, we will kill the remaining jobs
-    # output an error message of error detection and killing the remaining jobs
-    timestamp=\$(date +"%s" | cut -c 4-10)
-    qsub <<- CKALIGNFAIL
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l ncpus=1
-    #PBS -l mem=4gb
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    ${EMAIL}
-    #PBS -m a
-    #PBS -o ${logdir}/\${timestamp}_check_alnOK_${groupname}.log
-    #PBS -j oe
-    #PBS -W depend=afterok\${jobIDstring}
-    #PBS -N AlnOK_${groupname}
-
-    date +"%Y-%m-%d %H:%M:%S"
-    echo "Sucess: All alignment jobs were successfully finished without failure!"
+		# if error occored, we will kill the remaining jobs
+		# output an error message of error detection and killing the remaining jobs
+		timestamp=\$(date +"%s" | cut -c 4-10)
+		qsub <<- CKALIGNFAIL
+			#PBS -S /bin/bash
+			#PBS -q $queue
+			#PBS -l ncpus=1
+			#PBS -l mem=4gb
+			#PBS -l $walltime
+			#PBS -P $project
+			#PBS -l storage=gdata/xl04
+			${EMAIL}
+			#PBS -m a
+			#PBS -o ${logdir}/\${timestamp}_check_alnOK_${groupname}.log
+			#PBS -j oe
+			#PBS -W depend=afterok\${jobIDstring}
+			#PBS -N AlnOK_${groupname}
+			date +"%Y-%m-%d %H:%M:%S"
+			echo "Sucess: All alignment jobs were successfully finished without failure!"
 CKALIGNFAIL
 
-    timestamp=\$(date +"%s" | cut -c 4-10)
-    qsub <<- CKALIGNFAILCLN
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l ncpus=1
-    #PBS -l mem=4gb
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    ${EMAIL}
-    #PBS -m a
-    #PBS -o ${logdir}/\${timestamp}_alignfailclean_${groupname}.log
-    #PBS -j oe
-    #PBS -W depend=afternotok\${jobIDstring}
-    #PBS -N Alncln${groupname}
-
-    date +"%Y-%m-%d %H:%M:%S"
-    echo "Error with alignment jobs, deleting all remaining jobs of this pipeline."
-    RemJob=\$(qstat |grep ${groupname} |grep " Q \| H \| R " | awk 'BEGIN{FS=" "}{print \$1}')
-    echo \${RemJob}
-    qdel \${RemJob}
-
+		timestamp=\$(date +"%s" | cut -c 4-10)
+		qsub <<- CKALIGNFAILCLN
+			#PBS -S /bin/bash
+			#PBS -q $queue
+			#PBS -l ncpus=1
+			#PBS -l mem=4gb
+			#PBS -l $walltime
+			#PBS -P $project
+			#PBS -l storage=gdata/xl04
+			${EMAIL}
+			#PBS -m a
+			#PBS -o ${logdir}/\${timestamp}_alignfailclean_${groupname}.log
+			#PBS -j oe
+			#PBS -W depend=afternotok\${jobIDstring}
+			#PBS -N Alncln${groupname}
+			date +"%Y-%m-%d %H:%M:%S"
+			echo "Error with alignment jobs, deleting all remaining jobs of this pipeline."
+			RemJob=\$(qstat |grep ${groupname} |grep " Q \| H \| R " | awk 'BEGIN{FS=" "}{print \$1}')
+			echo \${RemJob}
+			qdel \${RemJob}
 CKALIGNFAILCLN
-
 ALIGNWRAP
-    #done fastq alignment && alignment jobs failure checking.
-
+		#done fastq alignment && alignment jobs failure checking.
 fi
+
 jID_alignwrap=$( qstat | grep AlnWrp${groupname} | cut -d ' ' -f 1 )
-if [ -z $merge ]
-then
-    waitstring_mrgsrtwrp="#PBS -W depend=afterok:${jID_alignwrap}"
+if [ -z $merge ]; then
+	waitstring_mrgsrtwrp="#PBS -W depend=afterok:${jID_alignwrap}"
 fi
 echo "below is the jID_alignwrap jobid"
 echo ${jID_alignwrap}
 echo ${waitstring_mrgsrtwrp}
-if [ -z $final ] && [ -z $dedup ] && [ -z $postproc ]
-then
-    ## merge the sorted files into one giant file that is also sorted.
-    ## change queue below to $long_queue
-    timestamp=$(date +"%s" | cut -c 4-10)
-    qsub <<MRGSRTWRAP
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l ncpus=6
-    #PBS -l mem=24gb
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    ${EMAIL}
-    #PBS -m a
-    #PBS -o ${logdir}/${timestamp}_mergesortwrap_${groupname}.log
-    #PBS -j oe
-    #PBS -N MStWrp${groupname}
-    ${waitstring_mrgsrtwrp}
-    date +"%Y-%m-%d %H:%M:%S"
-    echo "all alignment done, all aplitting and alignment jobs succeeded!"
-    jID_alnOK=\$( qstat | grep AlnOK_${groupname} | cut -d ' ' -f 1 )
-    echo "jID_aln-OK job id is \$jID_alnOK "
-    timestamp=\$(date +"%s" | cut -c 4-10)
-    if [ -z $merge ]
-    then
-        waitstring_alnOK="#PBS -W depend=afterok:\${jID_alnOK}"
-    fi
-    echo "waitstring_anlOK is \${waitstring_alnOK}"
-    echo "below without backslash"
-    echo ${waitstring_alnOK}
-    echo "below with backslash"
-    echo \${waitstring_alnOK}
-    qsub <<MRGSRT
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l ncpus=6
-        #PBS -l mem=24gb
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_fragmerge_${groupname}.log
-        #PBS -j oe
-        #PBS -N frgmrg${groupname}
-        \${waitstring_alnOK}
-        date +"%Y-%m-%d %H:%M:%S"
-        export LC_ALL=C
-        if [ -d $donesplitdir ]
-        then
-            mv $donesplitdir/* $splitdir/.
-        fi
-	if ! samtools merge -t cb -n $sthreadstring $outputdir/merged_sort.bam  $splitdir/*.bam
-        then
-            echo "***! Some problems occurred somewhere in creating  sorted align files."
-            exit 1
-        else
-            echo "Finished sorting all sorted files into a single merge."
-            rm -r ${tmpdir}
-        fi
+if [ -z $final ] && [ -z $dedup ] && [ -z $postproc ]; then
+	## merge the sorted files into one giant file that is also sorted.
+	## change queue below to $long_queue
+	timestamp=$(date +"%s" | cut -c 4-10)
+
+	qsub <<- MRGSRTWRAP
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l ncpus=6
+		#PBS -l mem=24gb
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		${EMAIL}
+		#PBS -m a
+		#PBS -o ${logdir}/${timestamp}_mergesortwrap_${groupname}.log
+		#PBS -j oe
+		#PBS -N MStWrp${groupname}
+		${waitstring_mrgsrtwrp}
+		date +"%Y-%m-%d %H:%M:%S"
+		echo "all alignment done, all aplitting and alignment jobs succeeded!"
+		jID_alnOK=\$( qstat | grep AlnOK_${groupname} | cut -d ' ' -f 1 )
+		echo "jID_aln-OK job id is \$jID_alnOK "
+		timestamp=\$(date +"%s" | cut -c 4-10)
+		if [ -z $merge ]; then
+			waitstring_alnOK="#PBS -W depend=afterok:\${jID_alnOK}"
+		fi
+		echo "waitstring_anlOK is \${waitstring_alnOK}"
+		echo "below without backslash"
+		echo ${waitstring_alnOK}
+		echo "below with backslash"
+		echo \${waitstring_alnOK}
+
+	qsub <<- MRGSRT
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l ncpus=6
+		#PBS -l mem=24gb
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		${EMAIL}
+		#PBS -m a
+		#PBS -o ${logdir}/\${timestamp}_fragmerge_${groupname}.log
+		#PBS -j oe
+		#PBS -N frgmrg${groupname}
+		\${waitstring_alnOK}
+		date +"%Y-%m-%d %H:%M:%S"
+		export LC_ALL=C
+		if [ -d $donesplitdir ]; then
+			mv $donesplitdir/* $splitdir/.
+		fi
+		if ! samtools merge -t cb -n $sthreadstring $outputdir/merged_sort.bam  $splitdir/*.bam; then
+			echo "***! Some problems occurred somewhere in creating  sorted align files."
+			exit 1
+		else
+			echo "Finished sorting all sorted files into a single merge."
+			rm -r ${tmpdir}
+		fi
 MRGSRT
-        jID_mrgsrt=\$( qstat | grep frgmrg${groupname} | cut -d ' ' -f 1 )
 
-        ##kill all remaining jobs if previous mergesort step exited with error
-        timestamp=\$(date +"%s" | cut -c 4-10)
-        qsub <<MRGSRTFAILCK
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l ncpus=1
-        #PBS -l mem=4gb
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_clean1_${groupname}.log
-        #PBS -j oe
-        #PBS -N clean1${groupname}
-        #PBS -W depend=afternotok:\${jID_mrgsrt}
-
-        date +"%Y-%m-%d %H:%M:%S"
-        echo "Error with merging sorted files job, ${jID_mrgsort}, deleting all remaining jobs of this pipeline."
-        RemJob1=\$(qstat |grep "$groupname" |grep " Q \| H \| R " | awk 'BEGIN{FS=" "}{print $1}'| cut -d ' ' -f 1)
-        qdel \${RemJob1}
+	jID_mrgsrt=\$( qstat | grep frgmrg${groupname} | cut -d ' ' -f 1 )
+	##kill all remaining jobs if previous mergesort step exited with error
+	timestamp=\$(date +"%s" | cut -c 4-10)
+	qsub <<- MRGSRTFAILCK
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		${EMAIL}
+		#PBS -m a
+		#PBS -o ${logdir}/\${timestamp}_clean1_${groupname}.log
+		#PBS -j oe
+		#PBS -N clean1${groupname}
+		#PBS -W depend=afternotok:\${jID_mrgsrt}
+		date +"%Y-%m-%d %H:%M:%S"
+		echo "Error with merging sorted files job, ${jID_mrgsort}, deleting all remaining jobs of this pipeline."
+		RemJob1=\$(qstat |grep "$groupname" |grep " Q \| H \| R " | awk 'BEGIN{FS=" "}{print $1}'| cut -d ' ' -f 1)
+		qdel \${RemJob1}
 MRGSRTFAILCK
 MRGSRTWRAP
 fi
+
 wait
 jID_mrgsrtwrap=$( qstat| grep MStWrp${groupname} | cut -d ' ' -f 1 )
-if [ -z $dedup ]
-then
-    waitstring_RDpWrp="#PBS -W depend=afterok:${jID_mrgsrtwrap}"
+if [ -z $dedup ]; then
+	waitstring_RDpWrp="#PBS -W depend=afterok:${jID_mrgsrtwrap}"
 fi
 echo "waitstring_RDpWrp is below:"
 echo ${waitstring_RDpWrp}
 wait
-if [ -z $final ] && [ -z $postproc ]
-then
-    ##remove duplicates from the big sorted file if merge sorted job exited successfully
-    timestamp=$(date +"%s" | cut -c 4-10)
-    qsub <<RMDUPWRAP
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l ncpus=1
-    #PBS -l mem=4gb
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    ${EMAIL}
-    #PBS -m a
-    #PBS -o ${logdir}/${timestamp}_rmdupwrap_${groupname}.log
-    #PBS -j oe
-    #PBS -N RDpWrp${groupname}
-    ${waitstring_RDpWrp}
-    date +"%Y-%m-%d %H:%M:%S"
-    echo ${waitstring_RDpWrp}
-    jID_mrgsrt=\$( qstat | grep frgmrg${groupname} | cut -d ' ' -f 1 )
-    if [ -z $dedup ]
-    then
-        waitstring_osplit="#PBS -W depend=afterok:\${jID_mrgsrt}"
-    fi
-    echo "jID_mrgsrt jobid is \$jID_mrgsrt "
-    echo "waitstring_osplit is:\${waitstring_osplit}"
-    timestamp=\$(date +"%s" | cut -c 4-10)
-    qsub <<RMDUPLICATE
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l ncpus=1
-        #PBS -l mem=4gb
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/\${timestamp}_osplit_${groupname}.log
-        #PBS -j oe
-        #PBS -N osplit${groupname}
-        #PBS -v timestamp=\${timestamp}
-        \${waitstring_osplit}
-        date +"%Y-%m-%d %H:%M:%S"
-        echo "Sucess: All mergefragments jobs were successfully finished!"
-        echo "now starts to remove duplicates from the big sorted file"
-        samtools view -h $outputdir/merged_sort.bam | awk -v queue=${long_queue} -v outfile=${logdir}/\${timestamp}_awksplit_rmdups -v juicedir=${juiceDir} -v dir=$outputdir -v groupname=$groupname -v walltime=$long_walltime -v justexact=$justexact -f ${juiceDir}/scripts/split_rmdups_sam.awk
+if [ -z $final ] && [ -z $postproc ]; then
+	##remove duplicates from the big sorted file if merge sorted job exited successfully
+	timestamp=$(date +"%s" | cut -c 4-10)
+	qsub <<- RMDUPWRAP
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		${EMAIL}
+		#PBS -m a
+		#PBS -o ${logdir}/${timestamp}_rmdupwrap_${groupname}.log
+		#PBS -j oe
+		#PBS -N RDpWrp${groupname}
+		${waitstring_RDpWrp}
+		date +"%Y-%m-%d %H:%M:%S"
+		echo ${waitstring_RDpWrp}
+		jID_mrgsrt=\$( qstat | grep frgmrg${groupname} | cut -d ' ' -f 1 )
+		if [ -z $dedup ]; then
+			waitstring_osplit="#PBS -W depend=afterok:\${jID_mrgsrt}"
+		fi
+		echo "jID_mrgsrt jobid is \$jID_mrgsrt "
+		echo "waitstring_osplit is:\${waitstring_osplit}"
+		timestamp=\$(date +"%s" | cut -c 4-10)
+
+	qsub <<- RMDUPLICATE
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		${EMAIL}
+		#PBS -m a
+		#PBS -o ${logdir}/\${timestamp}_osplit_${groupname}.log
+		#PBS -j oe
+		#PBS -N osplit${groupname}
+		#PBS -v timestamp=\${timestamp}
+		\${waitstring_osplit}
+		date +"%Y-%m-%d %H:%M:%S"
+		echo "Sucess: All mergefragments jobs were successfully finished!"
+		echo "now starts to remove duplicates from the big sorted file"
+		samtools view -h $outputdir/merged_sort.bam | awk -v queue=${long_queue} -v outfile=${logdir}/\${timestamp}_awksplit_rmdups -v juicedir=${juiceDir} -v dir=$outputdir -v groupname=$groupname -v walltime=$long_walltime -v justexact=$justexact -f ${juiceDir}/scripts/split_rmdups_sam.awk
 RMDUPLICATE
 
 RMDUPWRAP
@@ -876,157 +831,145 @@ fi
 jID_rmdupwrap=$( qstat | grep RDpWrp${groupname} | cut -d ' ' -f 1 )
 echo "jID_rmdupwrap ID: $jID_rmdupwrap"
 wait
-if [ -z "$genomePath" ]
-then
-    #If no path to genome is given, use genome ID as default.
-    genomePath=$genomeID
+if [ -z "$genomePath" ]; then
+	#If no path to genome is given, use genome ID as default.
+	genomePath=$genomeID
 fi
 
 # if early exit, we stop here, once the merged_nodups.txt file is created.
-if [ -z "$earlyexit" ]
-then
-    waitstring0="#PBS -W depend=afterok:${jID_rmdupwrap}"
-
-    #Skip if post-processing only is required
-    if [ -z $postproc ]
-    then
-        if [ -z $final ]
-        then
-            echo "final not set, superwrap1 job depend=afterok:jID_rmdupwrap"
-        else
-            waitstring0=""
-        fi
-        echo "waitstring0 is: $waitstring0"
-        timestamp=$(date +"%s" | cut -c 4-10)
-	qsub <<SUPERWRAP1
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l ncpus=1
-        #PBS -l mem=4gb
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        ${EMAIL}
-        #PBS -m a
-        #PBS -o ${logdir}/${timestamp}_superwrap1_${groupname}.log
-        #PBS -j oe
-        #PBS -N SpWrp1${groupname}
-        ${waitstring0}
-        timestamp=$(date +"%s" | cut -c 4-10)
-        echo "start submitting the lauch job!"
-        export groupname=$groupname
-        export juiceDir=$juiceDir
-        export load_java="${load_java}"
-        export about=$about
-        export site_file=$site_file
-        export ligation=$ligation
-        export logdir=${logdir}
-        export outputdir=$outputdir
-        export splitdir=$splitdir
-        export nofrag=$nofrag
-        export genomePath=$genomePath
-        export final=$final
-        export queue=$queue
-        export walltime=$walltime
-        export long_walltime=$long_walltime
-        export nofrag=$nofrag
-        export load_samtools=$load_samtools
-        export threads=$threads
-        export alloc_mem=$alloc_mem
-        export sthreadstring=$sthreadstring
-        ${juiceDir}/scripts/launch_stats.sh
+if [ -z "$earlyexit" ]; then
+	waitstring0="#PBS -W depend=afterok:${jID_rmdupwrap}"
+	#Skip if post-processing only is required
+	if [ -z $postproc ]; then
+		if [ -z $final ]; then
+			echo "final not set, superwrap1 job depend=afterok:jID_rmdupwrap"
+		else
+			waitstring0=""
+		fi
+		echo "waitstring0 is: $waitstring0"
+		timestamp=$(date +"%s" | cut -c 4-10)
+		qsub <<-SUPERWRAP1
+			#PBS -S /bin/bash
+			#PBS -q $queue
+			#PBS -l ncpus=1
+			#PBS -l mem=4gb
+			#PBS -l $walltime
+			#PBS -P $project
+			#PBS -l storage=gdata/xl04
+			${EMAIL}
+			#PBS -m a
+			#PBS -o ${logdir}/${timestamp}_superwrap1_${groupname}.log
+			#PBS -j oe
+			#PBS -N SpWrp1${groupname}
+			${waitstring0}
+			timestamp=$(date +"%s" | cut -c 4-10)
+			echo "start submitting the lauch job!"
+			export groupname=$groupname
+			export juiceDir=$juiceDir
+			export load_java="${load_java}"
+			export about=$about
+			export site_file=$site_file
+			export ligation=$ligation
+			export logdir=${logdir}
+			export outputdir=$outputdir
+			export splitdir=$splitdir
+			export nofrag=$nofrag
+			export genomePath=$genomePath
+			export final=$final
+			export queue=$queue
+			export walltime=$walltime
+			export long_walltime=$long_walltime
+			export nofrag=$nofrag
+			export load_samtools=$load_samtools
+			export threads=$threads
+			export alloc_mem=$alloc_mem
+			export sthreadstring=$sthreadstring
+			${juiceDir}/scripts/launch_stats.sh
 SUPERWRAP1
-    fi
-    jID_superwrap1="$( qstat | grep SpWrp1${groupname} | cut -d ' ' -f 1 )"
-    wait
-    if [ -z $postproc ]
-    then
-        waitstring6="#PBS -W depend=afterany:${jID_superwrap1}"
-    fi
-    wait
-    echo "waitstring6 is : ${waitstring6}"
-
-    timestamp=$(date +"%s" | cut -c 4-10)
-    qsub <<SUPERWRAP2
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    #PBS -l ncpus=1
-    #PBS -l mem=4gb
-    #PBS -o ${logdir}/${timestamp}_super_wrap2_${groupname}.log
-    #PBS -j oe
-    #PBS -N SpWrp2${groupname}
-    ${EMAIL}
-    #PBS -m a
-    ${waitstring6}
-    wait
-    export groupname=$groupname
-    export load_java="${load_java}"
-    export load_cuda="${load_cuda}"
-    export juiceDir=$juiceDir
-    export genomeID=$genomeID
-    export outputdir=$outputdir
-    export logdir=${logdir}
-    export splitdir=$splitdir
-    export queue=$queue
-    export walltime=$walltime
-    export long_walltime=$long_walltime
-    export postproc=$postproc
-    jID_launch=\$(qstat | grep Lnch_${groupname} | cut -d ' ' -f 1)
-    echo \$jID_launch
-    echo "waitstring3 is \${waitstring3}"
-    ${juiceDir}/scripts/postprocessing.sh
+	fi
+	jID_superwrap1="$( qstat | grep SpWrp1${groupname} | cut -d ' ' -f 1 )"
+	wait
+	if [ -z $postproc ]; then
+		waitstring6="#PBS -W depend=afterany:${jID_superwrap1}"
+	fi
+	wait
+	echo "waitstring6 is : ${waitstring6}"
+	timestamp=$(date +"%s" | cut -c 4-10)
+	qsub <<-SUPERWRAP2
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -o ${logdir}/${timestamp}_super_wrap2_${groupname}.log
+		#PBS -j oe
+		#PBS -N SpWrp2${groupname}
+		${EMAIL}
+		#PBS -m a
+		${waitstring6}
+		wait
+		export groupname=$groupname
+		export load_java="${load_java}"
+		export load_cuda="${load_cuda}"
+		export juiceDir=$juiceDir
+		export genomeID=$genomeID
+		export outputdir=$outputdir
+		export logdir=${logdir}
+		export splitdir=$splitdir
+		export queue=$queue
+		export walltime=$walltime
+		export long_walltime=$long_walltime
+		export postproc=$postproc
+		jID_launch=\$(qstat | grep Lnch_${groupname} | cut -d ' ' -f 1)
+		echo \$jID_launch
+		echo "waitstring3 is \${waitstring3}"
+		${juiceDir}/scripts/postprocessing.sh
 SUPERWRAP2
-
-
 
 ## After removing duplicates,if early exit is set,we directly go to the final check step.
 else
-    echo "earlyexit is set, stat,hic, and postprocess were not done."
-    timestamp=$(date +"%s" | cut -c 4-10)
-    qsub <<FINCK2
-    #PBS -S /bin/bash
-    #PBS -q $queue
-    #PBS -l $walltime
-    #PBS -P $project
-    #PBS -l storage=gdata/xl04
-    #PBS -l ncpus=1
-    #PBS -l mem=4gb
-    #PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.out
-    #PBS -j oe
-    ${EMAIL}
-    #PBS -m a
-    #PBS -N prepd_${groupname}
-    #PBS -W depend=afterok:${jID_rmdupwrap}
-    date +"%Y-%m-%d %H:%M:%S"
-
-    jID_osplit=\$( qstat | grep osplit${groupname} | cut -d ' ' -f 1 )
-    jID_rmsplit=\$( qstat | grep RmSplt${groupname} | cut -d ' ' -f 1)
-    wait
-    timestamp=\$(date +"%s" | cut -c 4-10)
-    qsub <<PREPDONE
-        #PBS -S /bin/bash
-        #PBS -q $queue
-        #PBS -l $walltime
-        #PBS -P $project
-        #PBS -l storage=gdata/xl04
-        #PBS -l ncpus=1
-        #PBS -l mem=4gb
-        #PBS -o ${logdir}/\${timestamp}_done_${groupname}.log
-        #PBS -j oe
-        #PBS -N ${groupname}_done
-        ${EMAIL}
-        #PBS -m a
-        #PBS -W depend=afterok:\${jID_osplit}:\${jID_rmsplit}
-
-        date +"%Y-%m-%d %H:%M:%S"
-        export splitdir=${splitdir}
-        export outputdir=${outputdir}
-        ${juiceDir}/scripts/check.sh
+	echo "earlyexit is set, stat,hic, and postprocess were not done."
+	timestamp=$(date +"%s" | cut -c 4-10)
+	qsub <<FINCK2
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -o ${logdir}/${timestamp}_prep_done_${groupname}.out
+		#PBS -j oe
+		${EMAIL}
+		#PBS -m a
+		#PBS -N prepd_${groupname}
+		#PBS -W depend=afterok:${jID_rmdupwrap}
+		date +"%Y-%m-%d %H:%M:%S"
+		jID_osplit=\$( qstat | grep osplit${groupname} | cut -d ' ' -f 1 )
+		jID_rmsplit=\$( qstat | grep RmSplt${groupname} | cut -d ' ' -f 1)
+		wait
+		timestamp=\$(date +"%s" | cut -c 4-10)
+	qsub <<PREPDONE
+		#PBS -S /bin/bash
+		#PBS -q $queue
+		#PBS -l $walltime
+		#PBS -P $project
+		#PBS -l storage=gdata/xl04
+		#PBS -l ncpus=1
+		#PBS -l mem=4gb
+		#PBS -o ${logdir}/\${timestamp}_done_${groupname}.log
+		#PBS -j oe
+		#PBS -N ${groupname}_done
+		${EMAIL}
+		#PBS -m a
+		#PBS -W depend=afterok:\${jID_osplit}:\${jID_rmsplit}
+		date +"%Y-%m-%d %H:%M:%S"
+		export splitdir=${splitdir}
+		export outputdir=${outputdir}
+		${juiceDir}/scripts/check.sh
 PREPDONE
 FINCK2
-
 fi
 echo "Finished adding all jobs... please wait while processing."
